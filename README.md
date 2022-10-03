@@ -9,7 +9,7 @@
 |  t   | Trajectory |                  Trajectory generator command                   |
 |  i   |  Register  |        Read or write the value of a CVM program register        |
 
-# 2.2 Page 10. :Set Command(s)
+# 2.2 Page 10. Set Command(s)
 
 The s command is used to set the value of a drive parameter in RAM or flash.
 ## Syntax
@@ -41,3 +41,28 @@ The g command is used to read the value of a drive parameter from RAM or flash.
 |  g r0xa0x   |   v 0x4000f800    |                         Read the value of parameter 0xa0 (amplifier event status) and return the value in hexadecimal format.                         |
 |  g f0x17   | e 15 |                  Attempted to read parameter 0x17 (actual motor position) from flash. Error 15 (Parameter doesn’t exist on requested page) was returned. Note that actual motor position is stored in RAM only.                   |
 
+# 2.4: Copy Command (c)
+The c command is used to copy the value of a parameter from one memory bank to another (RAM to flash or flash to RAM).
+## Syntax
+[node ID][<.>axis letter] c [memory bank][parameter ID]<CR>
+
+| Command |  Response   |                           Comment                           |
+|:----:|:----------:|:---------------------------------------------------------------:|
+|  c r0x30   |    ok     |             Copy the value of 0x30 from RAM to flash. The “ok” response indicates that the command executed successfully.             |
+|  .b c r0x30   |    ok     |          Copy the value of 0x30 from RAM to flash for axis B. The “ok” response indicates that the command executed successfully.          |
+|  3 c r0x30   |    ok    | Copy the value of 0x30 from RAM to flash for the drive with CAN node ID of 3. The “ok” response indicates that the command executed successfully. |
+|  c f0x30   |   ok    |                         Copy the value of 0x30 from flash to RAM. The “ok” response indicates that the command executed successfully.                        |
+
+# 2.5: Reset Drive Command (r)
+The r command is used to reset the drive. The command requires no additional parameters. The drive baud rate is set to 9600 when the drive restarts. The drive does not respond to this message.
+NOTE: if a reset command is issued to a drive on a multi-drop network, error code 32, “CAN Network communications failure,” will be received. This is because the drive reset before responding to the gateway drive. In this case, the error can be ignored.
+
+## Syntax
+[optional node ID] r<CR>
+## Notes
+The axis letter has no effect with this command because the reset command applies to all axes of a multi-axis drive.
+
+|  Command   |  Response   |                           Comment                           |
+|:----------:|:----------:|:---------------------------------------------------------------:|
+|     r      |    none     |             Drive is reset.             |
+| 3 r |    none     |          The drive with CAN node ID of 3 is reset.          |
